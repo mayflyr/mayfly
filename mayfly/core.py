@@ -99,7 +99,7 @@ async def _wrap_wait_shutdown(uid, component):
 
 class LiveComponent:
 	
-	def __init__(self, q_components_push, init_params, funcs_msgfwd):
+	def __init__(self, q_components_push, init_params, funcs_msgfwd, active_mayflyrepo):
 		
 		self._uid = init_params['uid']
 		
@@ -117,10 +117,16 @@ class LiveComponent:
 			str_loadimports = self._init_params['str_loadimports']
 		except KeyError:
 			str_loadimports = None
+		try:
+			str_mayfly_repo = self._init_params['str_mayfly_repo']
+			logger.info(f'RUNTIME {str_mayfly_repo=}')
+		except KeyError:
+			str_mayfly_repo = active_mayflyrepo
+			logger.info(f'PROCESS {str_mayfly_repo=}')
 		
 		self._q_msgs_inner = asyncio.Queue()
 		
-		cls = _make_universal_component_cls(def_type, str_requirements_jsonlst, str_loadimports, self._lc_bus, self._q_msgs_inner, self._get_uid, funcs_msgfwd)
+		cls = _make_universal_component_cls(def_type, str_requirements_jsonlst, str_loadimports, str_mayfly_repo, self._lc_bus, self._q_msgs_inner, self._get_uid, funcs_msgfwd)
 		
 		core_obj = _callfunc_or_makecls_with_optional_args(cls, [def_kwargs])
 		
@@ -299,7 +305,7 @@ def unregister_msgfwd(d_msgfwd, deliver_to_uid, intercept_uid, handler_name):
 	return
 
 
-async def _loop_run_components(q_components_pull, q_components_push, evt_stop):
+async def _loop_run_components(q_components_pull, q_components_push, evt_stop, active_mayflyrepo):
 	
 	logger.info(f'_loop_run_components BEGIN')
 	
@@ -367,7 +373,7 @@ async def _loop_run_components(q_components_pull, q_components_push, evt_stop):
 							]
 							
 							init_params = {**action_data}
-							component = LiveComponent(q_components_push, init_params, funcs_msgfwd)
+							component = LiveComponent(q_components_push, init_params, funcs_msgfwd, active_mayflyrepo)
 							
 							d_components[uid] = component
 							

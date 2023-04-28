@@ -34,7 +34,7 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 
-async def _lifecycle_single_component(predef_uid, q_components, evt_stop, str_component_def, str_json_kwargs, str_requirements_jsonlst, str_loadimports):
+async def _lifecycle_single_component(predef_uid, q_components, evt_stop, str_component_def, str_mayfly_repo, str_json_kwargs, str_requirements_jsonlst, str_loadimports):
 	
 	if predef_uid is not None:
 		uid = predef_uid
@@ -50,6 +50,8 @@ async def _lifecycle_single_component(predef_uid, q_components, evt_stop, str_co
 			'def': [str_component_def, t_kwargs], 
 			'str_requirements_jsonlst': str_requirements_jsonlst, 
 			'str_loadimports': str_loadimports, 
+			
+			'str_mayfly_repo': str_mayfly_repo, 
 		}
 	])
 	
@@ -232,7 +234,7 @@ async def _run_lcbus_proxy(lcbus_uid, q_components_pull, q_components_push):
 	return
 
 
-async def async_main(str_component_def, str_json_kwargs, str_loadimports, str_requirements_jsonlst, lcbus_uid, predef_uid):
+async def async_main(str_component_def, str_mayfly_repo, str_json_kwargs, str_loadimports, str_requirements_jsonlst, lcbus_uid, predef_uid):
 	
 	logger.info(f'before async_main')
 	
@@ -246,8 +248,8 @@ async def async_main(str_component_def, str_json_kwargs, str_loadimports, str_re
 		q_components_push = q_components_pull
 		
 		lst_coros += [
-			_lifecycle_single_component(predef_uid, q_components_push, evt_stop, str_component_def, str_json_kwargs, str_requirements_jsonlst, str_loadimports), 
-			_loop_run_components(q_components_pull, q_components_push, evt_stop)
+			_lifecycle_single_component(predef_uid, q_components_push, evt_stop, str_component_def, str_mayfly_repo, str_json_kwargs, str_requirements_jsonlst, str_loadimports), 
+			_loop_run_components(q_components_pull, q_components_push, evt_stop, str_mayfly_repo)
 		]
 		
 	else:
@@ -257,8 +259,8 @@ async def async_main(str_component_def, str_json_kwargs, str_loadimports, str_re
 		
 		lst_coros += [
 			_run_lcbus_proxy(lcbus_uid, q_components_pull, q_components_push), 
-			_lifecycle_single_component(predef_uid, q_components_push, evt_stop, str_component_def, str_json_kwargs, str_requirements_jsonlst, str_loadimports), 
-			_loop_run_components(q_components_pull, q_components_push, evt_stop)
+			_lifecycle_single_component(predef_uid, q_components_push, evt_stop, str_component_def, str_mayfly_repo, str_json_kwargs, str_requirements_jsonlst, str_loadimports), 
+			_loop_run_components(q_components_pull, q_components_push, evt_stop, str_mayfly_repo)
 		]
 	
 	await asyncio.gather(*lst_coros)

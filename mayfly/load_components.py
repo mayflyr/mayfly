@@ -141,10 +141,10 @@ async def _handle_running_process(process):
 	return
 
 
-def _make_universal_component_cls(str_value, str_requirements_jsonlst, str_loadimports, func_lc_bus, q_msgs_inner, func_get_uid, funcs_msgfwd):
+def _make_universal_component_cls(str_value, str_requirements_jsonlst, str_loadimports, str_mayfly_repo, func_lc_bus, q_msgs_inner, func_get_uid, funcs_msgfwd):
 	
 	if str_requirements_jsonlst is not None:
-		out = _make_venv_component_cls(func_lc_bus, q_msgs_inner, funcs_msgfwd, str_value, str_requirements_jsonlst, str_loadimports)
+		out = _make_venv_component_cls(func_lc_bus, q_msgs_inner, funcs_msgfwd, str_value, str_requirements_jsonlst, str_loadimports, str_mayfly_repo)
 	else:
 		out = _make_aexec_component_cls(func_lc_bus, q_msgs_inner, func_get_uid, funcs_msgfwd, str_value, str_requirements_jsonlst, str_loadimports)
 	
@@ -230,7 +230,7 @@ def _make_aexec_component_cls(func_lc_bus, q_msgs_inner, func_get_uid, funcs_msg
 	return AsyncExecProxyComponent
 
 
-def _make_venv_component_cls(func_lc_bus, q_msgs_inner, funcs_msgfwd, f_str, str_requirements_jsonlst, str_loadimports):
+def _make_venv_component_cls(func_lc_bus, q_msgs_inner, funcs_msgfwd, f_str, str_requirements_jsonlst, str_loadimports, str_mayfly_repo):
 	
 	func_registermsgfwd, func_unregistermsgfwd = funcs_msgfwd
 	
@@ -246,7 +246,7 @@ def _make_venv_component_cls(func_lc_bus, q_msgs_inner, funcs_msgfwd, f_str, str
 				
 				full_data = await q_msgs_inner.get()
 				
-				logger.info(f'HANDLE EVENTS : {full_data}')
+				logger.info(f'HANDLE EVENTS : {str(full_data)[:100]}')
 				
 				action_type, data = full_data
 				
@@ -328,6 +328,11 @@ def _make_venv_component_cls(func_lc_bus, q_msgs_inner, funcs_msgfwd, f_str, str
 				
 				full_pkg_str = ' '.join(json.loads(str_requirements_jsonlst))
 				
+				if str_mayfly_repo is None:
+					raise Exception(f'unexpected: str_mayfly_repo is NULL')
+				
+				path_pkg_mayfly = str_mayfly_repo
+				
 				cmd1 = [
 					'/bin/bash', 
 					'-c', 
@@ -347,7 +352,7 @@ def _make_venv_component_cls(func_lc_bus, q_msgs_inner, funcs_msgfwd, f_str, str
 				cmd2 = [
 					f'{path_user_root}/venv_{internal_uid_for_venv}/bin/python', '-m', 'mayfly', 
 					
-					f_str, str_json_kwargs, str_loadimports,
+					f_str, str_mayfly_repo, str_json_kwargs, str_loadimports,
 					
 					alt_requirements_jsonlst,
 					

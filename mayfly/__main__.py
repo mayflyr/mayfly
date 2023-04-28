@@ -1,7 +1,7 @@
 """mayfly
 
 Usage:
-  mayfly <str_component_def> <str_json_kwargs> <str_loadimports> <str_requirements_jsonlst> <lcbus_uid> <predef_uid>
+  mayfly <str_component_def> <str_mayfly_repo> <str_json_kwargs> <str_loadimports> <str_requirements_jsonlst> <lcbus_uid> <predef_uid>
 """
 
 import sys
@@ -12,14 +12,15 @@ from .run_component import main
 if __name__ == '__main__':
 	
 	str_component_def = sys.argv[1]
-	str_json_kwargs = sys.argv[2]
+	str_mayfly_repo = sys.argv[2]
+	str_json_kwargs = sys.argv[3]
 	
 	try:
-		str_loadimports = sys.argv[3]
+		str_loadimports = sys.argv[4]
 	except:
 		str_loadimports = None
 	try:
-		str_requirements_jsonlst = sys.argv[4]
+		str_requirements_jsonlst = sys.argv[5]
 	except:
 		str_requirements_jsonlst = None
 	else:
@@ -27,13 +28,13 @@ if __name__ == '__main__':
 			str_requirements_jsonlst = None
 	
 	try:
-		lcbus_uid = sys.argv[5]
+		lcbus_uid = sys.argv[6]
 	except:
 		lcbus_uid = None
 	try:
-		predef_uid = sys.argv[6]
+		predef_uid = sys.argv[7]
 	except:
 		predef_uid = None
 	
-	main(str_component_def, str_json_kwargs, str_loadimports, str_requirements_jsonlst, lcbus_uid, predef_uid)
+	main(str_component_def, str_mayfly_repo, str_json_kwargs, str_loadimports, str_requirements_jsonlst, lcbus_uid, predef_uid)
 	
