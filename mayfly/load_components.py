@@ -1,7 +1,6 @@
 
-path_user_root  = '/home/user'
-path_pkg_mayfly = f'{path_user_root}/mount/local_pkgs/mayfly'
-str_pycmd       = 'python3.11'
+path_user_home = '/home/user'
+str_pycmd      = 'python3.11'
 
 
 import asyncio
@@ -336,7 +335,7 @@ def _make_venv_component_cls(func_lc_bus, q_msgs_inner, funcs_msgfwd, f_str, str
 				cmd1 = [
 					'/bin/bash', 
 					'-c', 
-					f'cd {path_user_root} && {str_pycmd} -m venv venv_{internal_uid_for_venv} && . ./venv_{internal_uid_for_venv}/bin/activate && pip install --no-cache-dir --upgrade pip && pip install --no-cache-dir {full_pkg_str} {path_pkg_mayfly}'
+					f'cd {path_user_home} && {str_pycmd} -m venv venv_{internal_uid_for_venv} && . ./venv_{internal_uid_for_venv}/bin/activate && pip install --no-cache-dir --upgrade pip && pip install --no-cache-dir {full_pkg_str} {path_pkg_mayfly}'
 				]
 				
 				process1 = await asyncio.create_subprocess_exec(
@@ -350,7 +349,7 @@ def _make_venv_component_cls(func_lc_bus, q_msgs_inner, funcs_msgfwd, f_str, str
 				alt_requirements_jsonlst = ''
 				
 				cmd2 = [
-					f'{path_user_root}/venv_{internal_uid_for_venv}/bin/python', '-m', 'mayfly', 
+					f'{path_user_home}/venv_{internal_uid_for_venv}/bin/python', '-m', 'mayfly', 
 					
 					f_str, str_mayfly_repo, str_json_kwargs, str_loadimports,
 					
